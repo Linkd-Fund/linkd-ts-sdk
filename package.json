@@ -17,9 +17,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@stellar/stellar-sdk": "^13.3.0"
+  },
   "devDependencies": {
     "@types/node": "^25.3.0",
-    "stellar-sdk": "^13.3.0",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   }

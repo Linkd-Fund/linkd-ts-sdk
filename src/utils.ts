@@ -8,7 +8,10 @@ export class LinkdUtils {
         if (type === "address") {
             return nativeToScVal(value, { type: "address" });
         }
-        if (typeof value === "number") {
+        if (type === "string") {
+            return nativeToScVal(value, { type: "string" });
+        }
+        if (typeof value === "number" || type === "i128") {
             return nativeToScVal(value, { type: "i128" });
         }
         return nativeToScVal(value);
