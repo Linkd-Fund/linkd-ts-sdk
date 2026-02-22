@@ -14,12 +14,10 @@ export class LinkdEscrow {
     constructor(private client: LinkdClient) { }
 
     /**
-     * Core Simulation Pipeline.
-     * Takes a raw operation, simulates it against the network, attaches the correct 
-     * resource footprints, and returns the assembled XDR ready for client signing.
+     * Simulation Pipeline: Simulates operation, attaches resource footprints, 
+     * and returns assembled XDR ready for signing.
      */
     private async buildAndSimulate(sourceAddress: string, operation: xdr.Operation): Promise<string> {
-        // Fetch real account sequence from Soroban RPC
         const accountReq = await this.client.rpc.getAccount(sourceAddress);
         const account = new Account(sourceAddress, accountReq.sequenceNumber());
 
@@ -28,7 +26,7 @@ export class LinkdEscrow {
             networkPassphrase: this.client.networkPassphrase,
         })
             .addOperation(operation)
-            .setTimeout(300) // 5 minutes to sign and submit
+            .setTimeout(300)
             .build();
 
         const simulated = await this.client.rpc.simulateTransaction(tx);
@@ -37,13 +35,11 @@ export class LinkdEscrow {
             throw new Error(`Simulation failed: ${simulated.error}`);
         }
 
-        // Assemble the final transaction with the calculated footprint and fee
-        const assembledTx = rpc.assembleTransaction(tx, simulated);
-        return assembledTx.build().toXDR();
+        return rpc.assembleTransaction(tx, simulated).build().toXDR();
     }
 
     /**
-     * Read-only simulation pipeline for view functions.
+     * Executes read-only simulation for view functions.
      */
     private async simulateView(contractId: string, method: string, args: xdr.ScVal[] = []): Promise<any> {
         const contract = new Contract(contractId);
@@ -58,8 +54,6 @@ export class LinkdEscrow {
         }
         throw new Error(`View simulation failed for ${method}`);
     }
-
-    // --- WRITE OPERATIONS (Returns XDR for signing) ---
 
     async initialize(contractId: string, admin: string, ngo: string, auditor: string, beneficiary: string, tokenAddress: string): Promise<string> {
         const contract = new Contract(contractId);
@@ -91,7 +85,7 @@ export class LinkdEscrow {
         const op = contract.call(
             "submit_proof",
             LinkdUtils.toScVal(milestoneId, "u32"),
-            LinkdUtils.toScVal(proofHash, "string") // Uses String as updated in smart contract
+            LinkdUtils.toScVal(proofHash, "string")
         );
         return this.buildAndSimulate(ngo, op);
     }
@@ -117,8 +111,6 @@ export class LinkdEscrow {
         );
         return this.buildAndSimulate(admin, op);
     }
-
-    // --- READ OPERATIONS (Returns immediate data) ---
 
     async getTotalEscrowed(contractId: string): Promise<string> {
         return await this.simulateView(contractId, "get_total_escrowed");
