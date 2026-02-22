@@ -1,4 +1,4 @@
-# Linkdfund Accountability Protocol: TypeScript SDK
+# Linkd TS SDK
 
 A zero-liability, environment-agnostic utility layer for integrating with the Linkdfund Soroban Escrow primitive. This SDK abstracts Stellar's XDR serialization and RPC simulation into predictable, typed asynchronous methods.
 
