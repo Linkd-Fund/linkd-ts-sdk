@@ -1,6 +1,7 @@
 export * from "./client.js";
 export * from "./escrow.js";
 export * from "./utils.js";
+export * from "./anchoring/index.js";
 
 import { LinkdClient } from "./client.js";
 import type { LinkdSDKConfig } from "./client.js";
